@@ -14,5 +14,6 @@ dependencies:
   - torchvision
   - torchaudio
   - cudatoolkit=10.2
+  - pyyaml
   - pip:
     - dvc
