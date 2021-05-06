@@ -1,0 +1,13 @@
+stages:
+  process:
+    cmd: python process.py
+    deps:
+    - data/raw/alzheimer/
+    outs:
+    - data/processed/alzheimer/
+  featurization:
+    cmd: python featurization.py
+    deps:
+    - data/processed/alzheimer
+    outs:
+    - normalization.yaml

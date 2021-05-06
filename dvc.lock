@@ -1,0 +1,25 @@
+schema: '2.0'
+stages:
+  process:
+    cmd: python process.py
+    deps:
+    - path: data/raw/alzheimer/
+      md5: 21cc482503f15030206a13392238a987.dir
+      size: 34730032
+      nfiles: 6403
+    outs:
+    - path: data/processed/alzheimer/
+      md5: 20201719f5db35241ad80d69e60b7374.dir
+      size: 21464016
+      nfiles: 6400
+  featurization:
+    cmd: python featurization.py
+    deps:
+    - path: data/processed/alzheimer
+      md5: 20201719f5db35241ad80d69e60b7374.dir
+      size: 21464016
+      nfiles: 6400
+    outs:
+    - path: normalization.yaml
+      md5: 270782a9d97e0091ae7e65cdc19f0b9b
+      size: 165
