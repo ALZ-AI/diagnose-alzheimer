@@ -32,7 +32,7 @@ def get_mean_and_std(loader):
 
 mean, std = get_mean_and_std(train_set)
 
-data = utils.yaml.read_yaml("params.yaml")
+data = utils.yaml.read_yaml("normalization.yaml")
 data["dataset"]["mean"] = mean
 data["dataset"]["std"] = std
-utils.yaml.save_yaml("params.yaml", data)
+utils.yaml.save_yaml("normalization.yaml", data)

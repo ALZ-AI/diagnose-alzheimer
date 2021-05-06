@@ -9,7 +9,8 @@ folders = {
     "test": ["MildDemented", "ModerateDemented", "NonDemented", "VeryMildDemented"]
 }
 
-shutil.rmtree(ALZHEIMER_PROCESSED_DATA_DIR)
+if os.path.isdir(ALZHEIMER_PROCESSED_DATA_DIR):
+    shutil.rmtree(ALZHEIMER_PROCESSED_DATA_DIR)
 
 for key, labels in folders.items():
     for label in labels:
