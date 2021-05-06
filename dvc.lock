@@ -20,6 +20,6 @@ stages:
       size: 21464016
       nfiles: 6400
     outs:
-    - path: normalization.yaml
-      md5: 270782a9d97e0091ae7e65cdc19f0b9b
-      size: 165
+    - path: outs/normalization.yaml
+      md5: 97789ac7c4e09ddf14467def7c1a72bb
+      size: 168

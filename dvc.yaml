@@ -10,4 +10,4 @@ stages:
     deps:
     - data/processed/alzheimer
     outs:
-    - normalization.yaml
+    - outs/normalization.yaml

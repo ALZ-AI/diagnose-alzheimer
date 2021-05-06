@@ -3,7 +3,7 @@ import torch
 from torchvision import transforms, datasets
 import utils.yaml
 
-BATCH_SIZE = 32
+params = utils.yaml.read_yaml("params.yaml")
 
 transform = transforms.Compose([
     transforms.Resize((44, 52)),
@@ -11,9 +11,8 @@ transform = transforms.Compose([
     ])
 
 
-
-train_dataset = datasets.ImageFolder(TRAIN_RAW_DATA_DIR, transform=transform)
-train_set = torch.utils.data.DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=False)
+train_dataset = datasets.ImageFolder(TRAIN_PROCESSED_DATA_DIR, transform=transform)
+train_set = torch.utils.data.DataLoader(train_dataset, batch_size=params["featurization"]["batch_size"], shuffle=False)
 
 def get_mean_and_std(loader):
     mean = 0.
@@ -32,7 +31,7 @@ def get_mean_and_std(loader):
 
 mean, std = get_mean_and_std(train_set)
 
-data = utils.yaml.read_yaml("normalization.yaml")
-data["dataset"]["mean"] = mean
-data["dataset"]["std"] = std
-utils.yaml.save_yaml("normalization.yaml", data)
+data = utils.yaml.read_yaml("outs/normalization.yaml")
+data["alzheimer_data"]["mean"] = mean
+data["alzheimer_data"]["std"] = std
+utils.yaml.save_yaml("outs/normalization.yaml", data)
