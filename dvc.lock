@@ -19,7 +19,10 @@ stages:
       md5: 20201719f5db35241ad80d69e60b7374.dir
       size: 21464016
       nfiles: 6400
+    params:
+      params.yaml:
+        featurization.batch_size: 32
     outs:
     - path: outs/normalization.yaml
-      md5: 97789ac7c4e09ddf14467def7c1a72bb
-      size: 168
+      md5: 567564e68c67bd00a49ea240c2881cc9
+      size: 175

@@ -9,5 +9,7 @@ stages:
     cmd: python featurization.py
     deps:
     - data/processed/alzheimer
+    params:
+    - featurization.batch_size
     outs:
     - outs/normalization.yaml
