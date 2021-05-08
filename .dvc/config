@@ -1,4 +1,4 @@
 [core]
-    remote = storage
-['remote "storage"']
-    url = gdrive://18wAEi-N9uB53-hIIFRir3r3OkM0UAVcr
+    remote = alzheimer
+['remote "alzheimer"']
+    url = gdrive://181N9-YXgt1WtgxX7J0T0nV-0g6hjuKF9
