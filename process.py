@@ -3,14 +3,16 @@ from utils.settings import *
 import cv2
 import glob
 import shutil
+import utils.yaml
 
 folders = {
     "train": ["MildDemented", "ModerateDemented", "NonDemented", "VeryMildDemented"],
     "test": ["MildDemented", "ModerateDemented", "NonDemented", "VeryMildDemented"]
 }
 
-if os.path.isdir(ALZHEIMER_PROCESSED_DATA_DIR):
-    shutil.rmtree(ALZHEIMER_PROCESSED_DATA_DIR)
+os.path.isdir(ALZHEIMER_PROCESSED_DATA_DIR) and shutil.rmtree(ALZHEIMER_PROCESSED_DATA_DIR)
+
+clean_yaml = utils.yaml.read_yaml("outs/clean.yaml")
 
 for key, labels in folders.items():
     for label in labels:
@@ -25,3 +27,6 @@ for key, labels in folders.items():
             # Save Processed Image
             filename = os.path.basename(image_path)
             cv2.imwrite(os.path.join(saved_to_path, filename), image, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
+
+clean_yaml["process_stage"] = "success"
+utils.yaml.save_yaml("outs/clean.yaml", clean_yaml)

@@ -1,7 +1,22 @@
 schema: '2.0'
 stages:
+  process:
+    cmd: python process.py
+    deps:
+    - path: data/raw/alzheimer/
+      md5: 09999044e995fec31e1d15eeaa384016.dir
+      size: 34725354
+      nfiles: 6402
+    outs:
+    - path: outs/clean.yaml
+      md5: d0b1a3088b5a19316ab60324d5d7f908
+      size: 23
   featurization:
     cmd: python featurization.py
+    deps:
+    - path: outs/clean.yaml
+      md5: d0b1a3088b5a19316ab60324d5d7f908
+      size: 23
     params:
       params.yaml:
         featurization.batch_size: 64
@@ -9,10 +24,3 @@ stages:
     - path: outs/normalization.yaml
       md5: e7dc4280c93bddb02affcf876daf0b70
       size: 166
-  process:
-    cmd: python process.py
-    deps:
-    - path: data/raw/alzheimer/
-      md5: 21cc482503f15030206a13392238a987.dir
-      size: 34730032
-      nfiles: 6403
