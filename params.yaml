@@ -1,2 +1,6 @@
 featurization:
   batch_size: 64
+train:
+  batch_size: 64
+  image_width: 50
+  image_height: 50

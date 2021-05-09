@@ -5,11 +5,3 @@ stages:
     - data/raw/alzheimer/
     outs:
     - outs/clean.yaml
-  featurization:
-    cmd: python featurization.py
-    deps:
-    - outs/clean.yaml
-    params:
-    - featurization.batch_size
-    outs:
-    - outs/normalization.yaml
