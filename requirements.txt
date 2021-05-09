@@ -2,10 +2,7 @@ numpy
 pandas
 jupyter
 matplotlib
-pytorch
-torchvision
-torchaudio
-cudatoolkit=10.2
 dvc
 pyyaml
 opencv-python
+tensorflow

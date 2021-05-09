@@ -10,10 +10,7 @@ dependencies:
   - python=3.8.8
   - jupyter
   - matplotlib
-  - pytorch
-  - torchvision
-  - torchaudio
-  - cudatoolkit=10.2
+  - tensorflow
   - pyyaml
   - pip:
     - dvc
