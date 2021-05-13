@@ -1,0 +1,40 @@
+name: diagnose-alzheimer-ci-testing
+on: [push]
+jobs:
+  run:
+    runs-on: [ubuntu-latest]
+    env:
+          GDRIVE_CREDENTIALS_DATA: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: iterative/setup-cml@v1
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install python packages
+        run: |
+          # Install python packages
+          pip install -r requirements.txt
+      - name: Unit testing
+        run: |
+          # Unit testing
+          python -m unittest
+      - name: Download Data
+        run: |
+          pip install 'dvc[gdrive]'
+          dvc pull
+      - name: Train model
+        run: |
+          # Your ML workflow goes here
+          dvc repro
+      #- name: Write CML report
+        #run: |
+          # git fetch --prune
+          # dvc metrics diff --show-md master > report.md
+          # echo "## Visualizations"
+          # Post reports as comments in GitHub PRs
+          # cat results.txt >> report.md
+          # cml-publish visualizations.png --md > report.md
+          # cml-send-comment report.md
