@@ -18,7 +18,7 @@ print(tf.__version__)
 AUTOTUNE = tf.data.experimental.AUTOTUNE
 BATCH_SIZE = 16 * strategy.num_replicas_in_sync
 IMAGE_SIZE = [176, 208]
-EPOCHS = 100
+EPOCHS = 10
 TRAIN_DIR = 'Alzheimer_s Dataset/train'
 TEST_DIR = 'Alzheimer_s Dataset/test'
 
@@ -114,3 +114,38 @@ def build_model():
     ])
 
     return model
+
+with strategy.scope():
+    model = build_model()
+
+    METRICS = [tf.keras.metrics.AUC(name='auc')]
+
+    model.compile(
+        optimizer='adam',
+        loss=tf.losses.CategoricalCrossentropy(),
+        metrics=METRICS
+    )
+
+def exponential_decay(lr0, s):
+    def exponential_decay_fn(epoch):
+        return lr0 * 0.1 **(epoch / s)
+    return exponential_decay_fn
+
+exponential_decay_fn = exponential_decay(0.01, 20)
+
+lr_scheduler = tf.keras.callbacks.LearningRateScheduler(exponential_decay_fn)
+
+checkpoint_cb = tf.keras.callbacks.ModelCheckpoint("alzheimer_model.h5",
+                                                    save_best_only=True)
+
+early_stopping_cb = tf.keras.callbacks.EarlyStopping(patience=10,
+                                                     restore_best_weights=True)
+
+history = model.fit(
+    train_ds,
+    validation_data=val_ds,
+    callbacks=[checkpoint_cb, early_stopping_cb, lr_scheduler],
+    epochs=EPOCHS)
+
+
+
