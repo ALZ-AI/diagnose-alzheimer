@@ -1,5 +1,5 @@
 import json
-import torch
+import tensorflow
 
 def predict(event, context):
     body = {
