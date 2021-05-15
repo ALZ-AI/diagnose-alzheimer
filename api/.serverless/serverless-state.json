@@ -1,15 +1,22 @@
 {
   "service": {
-    "service": "diagnose-alzheimer-api",
+    "service": "api2",
     "serviceObject": {
-      "name": "diagnose-alzheimer-api"
+      "name": "api2"
     },
     "provider": {
       "name": "aws",
-      "runtime": "python3.8",
+      "region": "eu-central-1",
       "lambdaHashingVersion": "20201221",
       "stage": "dev",
-      "region": "eu-central-1",
+      "ecr": {
+        "images": {
+          "diagnose_alzheimer_api": {
+            "path": "./",
+            "file": "Dockerfile"
+          }
+        }
+      },
       "variableSyntax": "\\${([^{}:]+?(?:\\(|:)(?:[^:{}][^{}]*?)?)}",
       "versionFunctions": true,
       "compiledCloudFormationTemplate": {
@@ -88,7 +95,7 @@
           "PredictLogGroup": {
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
-              "LogGroupName": "/aws/lambda/diagnose-alzheimer-api-dev-predict"
+              "LogGroupName": "/aws/lambda/api2-dev-predict"
             }
           },
           "IamRoleLambdaExecution": {
@@ -116,7 +123,7 @@
                     "Fn::Join": [
                       "-",
                       [
-                        "diagnose-alzheimer-api",
+                        "api2",
                         "dev",
                         "lambda"
                       ]
@@ -133,7 +140,7 @@
                         ],
                         "Resource": [
                           {
-                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/diagnose-alzheimer-api-dev*:*"
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/api2-dev*:*"
                           }
                         ]
                       },
@@ -144,7 +151,7 @@
                         ],
                         "Resource": [
                           {
-                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/diagnose-alzheimer-api-dev*:*:*"
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/api2-dev*:*:*"
                           }
                         ]
                       }
@@ -157,7 +164,7 @@
                 "Fn::Join": [
                   "-",
                   [
-                    "diagnose-alzheimer-api",
+                    "api2",
                     "dev",
                     {
                       "Ref": "AWS::Region"
@@ -168,64 +175,22 @@
               }
             }
           },
-          "EnterpriseLogAccessIamRole": {
-            "Type": "AWS::IAM::Role",
-            "Properties": {
-              "AssumeRolePolicyDocument": {
-                "Version": "2012-10-17",
-                "Statement": [
-                  {
-                    "Effect": "Allow",
-                    "Principal": {
-                      "AWS": "arn:aws:iam::802587217904:root"
-                    },
-                    "Action": "sts:AssumeRole",
-                    "Condition": {
-                      "StringEquals": {
-                        "sts:ExternalId": "ServerlessEnterprise-f838cd15-038a-485e-bca3-2459226cf66f"
-                      }
-                    }
-                  }
-                ]
-              },
-              "Policies": [
-                {
-                  "PolicyName": "LogFilterAccess",
-                  "PolicyDocument": {
-                    "Version": "2012-10-17",
-                    "Statement": [
-                      {
-                        "Effect": "Allow",
-                        "Action": [
-                          "logs:FilterLogEvents"
-                        ],
-                        "Resource": [
-                          {
-                            "Fn::GetAtt": [
-                              "PredictLogGroup",
-                              "Arn"
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          },
           "PredictLambdaFunction": {
             "Type": "AWS::Lambda::Function",
             "Properties": {
               "Code": {
-                "S3Bucket": {
-                  "Ref": "ServerlessDeploymentBucket"
-                },
-                "S3Key": "serverless/diagnose-alzheimer-api/dev/1620932681040-2021-05-13T19:04:41.040Z/diagnose-alzheimer-api.zip"
+                "ImageUri": "249898374510.dkr.ecr.eu-central-1.amazonaws.com/serverless-api2-dev@sha256:52dedce91a71d949b1b00b29c7ce249c0c7a02ebdbd79ab49b02b98524db1d0d"
               },
-              "Handler": "s_predict.handler",
-              "Runtime": "python3.8",
-              "FunctionName": "diagnose-alzheimer-api-dev-predict",
+              "ImageConfig": {
+                "Command": [
+                  "app.predict"
+                ],
+                "EntryPoint": [
+                  "/lambda-entrypoint.sh"
+                ]
+              },
+              "PackageType": "Image",
+              "FunctionName": "api2-dev-predict",
               "MemorySize": 1024,
               "Timeout": 6,
               "Role": {
@@ -239,20 +204,20 @@
               "PredictLogGroup"
             ]
           },
-          "PredictLambdaVersionLqfzMc0zY7EveUYAhuwDZ7m9r9VPwwLnirw6AbHvpuk": {
+          "PredictLambdaVersionU4CWH3nBsWDxldOqArEnu0HllGFwzBoY3skfDiYYfY": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "PredictLambdaFunction"
               },
-              "CodeSha256": "dVETOu7+pNlsbqaBKopsBjdGprYpXBf4HVG/TdNwOic="
+              "CodeSha256": "52dedce91a71d949b1b00b29c7ce249c0c7a02ebdbd79ab49b02b98524db1d0d"
             }
           },
           "ApiGatewayRestApi": {
             "Type": "AWS::ApiGateway::RestApi",
             "Properties": {
-              "Name": "dev-diagnose-alzheimer-api",
+              "Name": "dev-api2",
               "EndpointConfiguration": {
                 "Types": [
                   "EDGE"
@@ -274,49 +239,6 @@
               "RestApiId": {
                 "Ref": "ApiGatewayRestApi"
               }
-            }
-          },
-          "ApiGatewayMethodPredictPost": {
-            "Type": "AWS::ApiGateway::Method",
-            "Properties": {
-              "HttpMethod": "POST",
-              "RequestParameters": {},
-              "ResourceId": {
-                "Ref": "ApiGatewayResourcePredict"
-              },
-              "RestApiId": {
-                "Ref": "ApiGatewayRestApi"
-              },
-              "ApiKeyRequired": false,
-              "AuthorizationType": "NONE",
-              "Integration": {
-                "IntegrationHttpMethod": "POST",
-                "Type": "AWS_PROXY",
-                "Uri": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":apigateway:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":lambda:path/2015-03-31/functions/",
-                      {
-                        "Fn::GetAtt": [
-                          "PredictLambdaFunction",
-                          "Arn"
-                        ]
-                      },
-                      "/invocations"
-                    ]
-                  ]
-                }
-              },
-              "MethodResponses": []
             }
           },
           "ApiGatewayMethodPredictGet": {
@@ -362,7 +284,7 @@
               "MethodResponses": []
             }
           },
-          "ApiGatewayDeployment1620932621579": {
+          "ApiGatewayDeployment1621075300438": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -371,7 +293,6 @@
               "StageName": "dev"
             },
             "DependsOn": [
-              "ApiGatewayMethodPredictPost",
               "ApiGatewayMethodPredictGet"
             ]
           },
@@ -411,153 +332,6 @@
                 ]
               }
             }
-          },
-          "ApiGatewayLogGroup": {
-            "Type": "AWS::Logs::LogGroup",
-            "Properties": {
-              "LogGroupName": "/aws/api-gateway/diagnose-alzheimer-api-dev"
-            }
-          },
-          "CustomApiGatewayAccountCloudWatchRole": {
-            "Type": "Custom::ApiGatewayAccountRole",
-            "Version": 1,
-            "Properties": {
-              "ServiceToken": {
-                "Fn::GetAtt": [
-                  "CustomDashresourceDashapigwDashcwDashroleLambdaFunction",
-                  "Arn"
-                ]
-              }
-            }
-          },
-          "IamRoleCustomResourcesLambdaExecution": {
-            "Type": "AWS::IAM::Role",
-            "Properties": {
-              "AssumeRolePolicyDocument": {
-                "Version": "2012-10-17",
-                "Statement": [
-                  {
-                    "Effect": "Allow",
-                    "Principal": {
-                      "Service": [
-                        "lambda.amazonaws.com"
-                      ]
-                    },
-                    "Action": [
-                      "sts:AssumeRole"
-                    ]
-                  }
-                ]
-              },
-              "Policies": [
-                {
-                  "PolicyName": {
-                    "Fn::Join": [
-                      "-",
-                      [
-                        "dev",
-                        "diagnose-alzheimer-api",
-                        "custom-resources-lambda"
-                      ]
-                    ]
-                  },
-                  "PolicyDocument": {
-                    "Version": "2012-10-17",
-                    "Statement": [
-                      {
-                        "Effect": "Allow",
-                        "Resource": {
-                          "Fn::Join": [
-                            ":",
-                            [
-                              "arn",
-                              {
-                                "Ref": "AWS::Partition"
-                              },
-                              "iam:",
-                              {
-                                "Ref": "AWS::AccountId"
-                              },
-                              "role/*"
-                            ]
-                          ]
-                        },
-                        "Action": [
-                          "iam:AttachRolePolicy",
-                          "iam:CreateRole",
-                          "iam:ListAttachedRolePolicies",
-                          "iam:PassRole"
-                        ]
-                      },
-                      {
-                        "Effect": "Allow",
-                        "Resource": {
-                          "Fn::Join": [
-                            ":",
-                            [
-                              "arn",
-                              {
-                                "Ref": "AWS::Partition"
-                              },
-                              "apigateway:*::/account"
-                            ]
-                          ]
-                        },
-                        "Action": [
-                          "apigateway:GET",
-                          "apigateway:PATCH"
-                        ]
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          },
-          "CustomDashresourceDashapigwDashcwDashroleLambdaFunction": {
-            "Type": "AWS::Lambda::Function",
-            "Properties": {
-              "Code": {
-                "S3Bucket": {
-                  "Ref": "ServerlessDeploymentBucket"
-                },
-                "S3Key": "serverless/diagnose-alzheimer-api/dev/1620932681040-2021-05-13T19:04:41.040Z/custom-resources.zip"
-              },
-              "FunctionName": "diagnose-alzheimer-api-dev-custom-resource-apigw-cw-role",
-              "Handler": "apiGatewayCloudWatchRole/handler.handler",
-              "MemorySize": 1024,
-              "Runtime": "nodejs12.x",
-              "Timeout": 180,
-              "Role": {
-                "Fn::GetAtt": [
-                  "IamRoleCustomResourcesLambdaExecution",
-                  "Arn"
-                ]
-              }
-            },
-            "DependsOn": [
-              "IamRoleCustomResourcesLambdaExecution"
-            ]
-          },
-          "CloudWatchLogsSubscriptionFilterPredictLogGroup": {
-            "Type": "AWS::Logs::SubscriptionFilter",
-            "Properties": {
-              "DestinationArn": "arn:aws:logs:eu-central-1:802587217904:destination:f838cd15-038a-485e-bca3-2459226cf66f#8B9jZr7G1Hj2cTTbMr#diagnose-alzheimer-api#dev",
-              "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
-              "LogGroupName": {
-                "Ref": "PredictLogGroup"
-              }
-            }
-          },
-          "CloudWatchLogsSubscriptionFilterApiGatewayLogGroup": {
-            "Type": "AWS::Logs::SubscriptionFilter",
-            "Properties": {
-              "DestinationArn": "arn:aws:logs:eu-central-1:802587217904:destination:f838cd15-038a-485e-bca3-2459226cf66f#8B9jZr7G1Hj2cTTbMr#diagnose-alzheimer-api#dev",
-              "FilterPattern": "\"SLS_ACCESS_LOG\"",
-              "LogGroupName": {
-                "Ref": "ApiGatewayLogGroup"
-              }
-            }
           }
         },
         "Outputs": {
@@ -566,27 +340,16 @@
               "Ref": "ServerlessDeploymentBucket"
             },
             "Export": {
-              "Name": "sls-diagnose-alzheimer-api-dev-ServerlessDeploymentBucketName"
-            }
-          },
-          "EnterpriseLogAccessIamRole": {
-            "Value": {
-              "Fn::GetAtt": [
-                "EnterpriseLogAccessIamRole",
-                "Arn"
-              ]
-            },
-            "Export": {
-              "Name": "sls-diagnose-alzheimer-api-dev-EnterpriseLogAccessIamRole"
+              "Name": "sls-api2-dev-ServerlessDeploymentBucketName"
             }
           },
           "PredictLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "PredictLambdaVersionLqfzMc0zY7EveUYAhuwDZ7m9r9VPwwLnirw6AbHvpuk"
+              "Ref": "PredictLambdaVersionU4CWH3nBsWDxldOqArEnu0HllGFwzBoY3skfDiYYfY"
             },
             "Export": {
-              "Name": "sls-diagnose-alzheimer-api-dev-PredictLambdaFunctionQualifiedArn"
+              "Name": "sls-api2-dev-PredictLambdaFunctionQualifiedArn"
             }
           },
           "ServiceEndpoint": {
@@ -612,7 +375,7 @@
               ]
             },
             "Export": {
-              "Name": "sls-diagnose-alzheimer-api-dev-ServiceEndpoint"
+              "Name": "sls-api2-dev-ServiceEndpoint"
             }
           }
         }
@@ -699,28 +462,21 @@
           }
         }
       },
-      "logs": {
-        "restApi": {
-          "format": "{\"requestTime\":\"$context.requestTime\",\"requestId\":\"$context.requestId\",\"apiId\":\"$context.apiId\",\"resourceId\":\"$context.resourceId\",\"resourcePath\":\"$context.resourcePath\",\"path\":\"$context.path\",\"httpMethod\":\"$context.httpMethod\",\"status\":\"$context.status\",\"authLatency\":\"$context.authorizer.integrationLatency\",\"integrationLatency\":\"$context.integrationLatency\",\"integrationStatus\":\"$context.integrationStatus\",\"responseLatency\":\"$context.responseLatency\",\"responseLength\":\"$context.responseLength\",\"errorMessage\":\"$context.error.message\",\"format\":\"SLS_ACCESS_LOG\",\"version\":\"1.0.0\"}"
-        }
-      },
       "vpc": {}
     },
-    "plugins": [
-      "serverless-python-requirements"
-    ],
     "pluginsData": {},
     "functions": {
       "predict": {
-        "handler": "s_predict.handler",
-        "events": [
-          {
-            "http": {
-              "path": "predict",
-              "method": "post",
-              "integration": "AWS_PROXY"
-            }
+        "image": {
+          "name": "diagnose_alzheimer_api",
+          "command": {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"PredictLambdaFunction\"][\"Properties\"][\"ImageConfig\"][\"Command\"]"
           },
+          "entryPoint": {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"PredictLambdaFunction\"][\"Properties\"][\"ImageConfig\"][\"EntryPoint\"]"
+          }
+        },
+        "events": [
           {
             "http": {
               "path": "predict",
@@ -729,30 +485,22 @@
             }
           }
         ],
-        "name": "diagnose-alzheimer-api-dev-predict",
+        "name": "api2-dev-predict",
         "package": {},
         "memory": 1024,
         "timeout": 6,
-        "runtime": "python3.8",
         "vpc": {},
-        "versionLogicalId": "PredictLambdaVersionLqfzMc0zY7EveUYAhuwDZ7m9r9VPwwLnirw6AbHvpuk"
+        "versionLogicalId": "PredictLambdaVersionU4CWH3nBsWDxldOqArEnu0HllGFwzBoY3skfDiYYfY"
       }
     },
     "configValidationMode": "warn",
     "serviceFilename": "serverless.yml",
-    "app": "diagnose-alzheimer-api",
-    "org": "inceenes10",
     "layers": {},
     "initialServerlessConfig": {
       "service": {
         "$ref": "$[\"service\"][\"serviceObject\"]"
       },
-      "app": "diagnose-alzheimer-api",
-      "org": "inceenes10",
       "frameworkVersion": "2",
-      "plugins": {
-        "$ref": "$[\"service\"][\"plugins\"]"
-      },
       "provider": {
         "$ref": "$[\"service\"][\"provider\"]"
       },
@@ -760,14 +508,10 @@
         "$ref": "$[\"service\"][\"functions\"]"
       }
     },
-    "isDashboardMonitoringPreconfigured": true,
-    "isDashboardAppPreconfigured": true,
-    "orgUid": "f838cd15-038a-485e-bca3-2459226cf66f",
-    "appUid": "8B9jZr7G1Hj2cTTbMr",
-    "artifact": "/Users/inceenes10/Projects/deep_learning_projects/diagnose-alzheimer/branch_inceenes10/diagnose-alzheimer/api/.serverless/diagnose-alzheimer-api.zip"
+    "isDashboardMonitoringPreconfigured": false
   },
   "package": {
-    "artifactDirectoryName": "serverless/diagnose-alzheimer-api/dev/1620932681040-2021-05-13T19:04:41.040Z",
-    "artifact": "diagnose-alzheimer-api.zip"
+    "artifactDirectoryName": "serverless/api2/dev/1621075300889-2021-05-15T10:41:40.889Z",
+    "artifact": ""
   }
 }
