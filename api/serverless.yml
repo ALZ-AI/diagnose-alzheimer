@@ -1,0 +1,25 @@
+service: api2
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  region: eu-central-1
+  lambdaHashingVersion: 20201221
+  stage: dev
+  ecr:
+    images:
+      diagnose_alzheimer_api:
+        path: ./
+        file: Dockerfile
+functions:
+  predict:
+    image:
+      name: diagnose_alzheimer_api
+      command:
+        - app.predict
+      entryPoint:
+          - '/lambda-entrypoint.sh'
+    events:
+      - http:
+          path: /predict
+          method: get
