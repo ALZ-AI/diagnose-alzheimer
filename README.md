@@ -32,6 +32,6 @@ pip install -r requirements.txt
 We use Data Version Control System because we don't want to include data in our github repository. If you need data for your job, you need to run:
 
 ````
-dvc pull -r storage
+dvc pull -r alzheimer
 `````
 and you will see that dvc gives you an url and wants token from you. Copy that url and paste it into browser tab and go that url. Give permission with your account to dvc and google will give you a token. Take that token and paste it into terminal, and go on. Data will be downloading and you are ready to do your job.
