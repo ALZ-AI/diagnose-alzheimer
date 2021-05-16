@@ -42,4 +42,4 @@ COPY app.py ./
 
 
 # Set the CMD to your handler
-CMD ["handler.predict"]
+CMD ["app.predict"]
