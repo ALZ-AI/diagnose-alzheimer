@@ -1,9 +1,10 @@
 import json
-import tensorflow
+import tensorflow as tf
 
 def predict(event, context):
     body = {
         "message": "Hello, world! Your function executed successfully!",
+        "tf_version": tf.__version__
     }
 
     response = {
