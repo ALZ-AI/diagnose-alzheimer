@@ -22,6 +22,10 @@ functions:
         - app.predict
       entryPoint:
           - '/lambda-entrypoint.sh'
+      enviroment:
+        BUCKET_NAME: diagnose-alzheimer-bucket
+        MODEL_FILE_PATH: outs/model.h5
+        MODEL_LOCAL_FILE_PATH: tmp/outs/model.h5
     events:
       - http:
           path: /predict
