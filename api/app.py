@@ -42,16 +42,15 @@ def predict(event, context):
     object.download_fileobj(tmp_file)
     
     # load model
-    model = tf.load_model(tmp_file)
+    model = tf.keras.models.load_model(tmp_file)
     
     # make prediction
-    # model.predict()
+    prediction = model.predict(image)
     
     tmp_file.close()
     
     body = {
-        "message": "Hello, world! Your function executed successfully!",
-        "tf_version": tf.__version__
+        "prediction": prediction
     }
 
     response = {
