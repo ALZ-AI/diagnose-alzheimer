@@ -5,6 +5,8 @@ import glob
 import shutil
 import utils.yaml
 
+ALZHEIMER_RAW_DATA_DIR='Alzheimer_s Dataset/'
+ALZHEIMER_PROCESSED_DATA_DIR='data/processed/'
 folders = {
     "train": ["MildDemented", "ModerateDemented", "NonDemented", "VeryMildDemented"],
     "test": ["MildDemented", "ModerateDemented", "NonDemented", "VeryMildDemented"]
@@ -23,7 +25,7 @@ for key, labels in folders.items():
         for image_path in glob.glob(os.path.join(ALZHEIMER_RAW_DATA_DIR, key, label, "*.jpg")):
             image = cv2.imread(image_path)
             image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            image = cv2.resize(image, (88, 104), interpolation = cv2.INTER_NEAREST)
+            image = cv2.resize(image, (256, 256), interpolation = cv2.INTER_NEAREST)
             # Save Processed Image
             filename = os.path.basename(image_path)
             cv2.imwrite(os.path.join(saved_to_path, filename), image, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
