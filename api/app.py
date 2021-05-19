@@ -30,7 +30,7 @@ def predict(event, context):
     
     image_str = form_data["image"][0]
     image = Image.open(io.BytesIO(image_str))
-    image = np.array(image)
+    image = np.array(image).resize(256, 256, -1, 3)
     
     # download model from S3 Bucket to lambda
     s3 = boto3.resource("s3")
