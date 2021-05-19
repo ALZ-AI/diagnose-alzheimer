@@ -10,8 +10,6 @@ params = utils.yaml.read_yaml("params.yaml")
 IMAGE_WIDTH = params["train"]["image_width"]
 IMAGE_HEIGHT = params["train"]["image_height"]
 BATCH_SIZE = params["train"]["batch_size"]
-TRAIN_PROCESSED_DATA_DIR = 'data/processed/train/'
-TEST_PROCESSED_DATA_DIR = 'data/processed/test/'
 
 # some tensorflow things
 AUTOTUNE = tf.data.experimental.AUTOTUNE

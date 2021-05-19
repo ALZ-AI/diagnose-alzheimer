@@ -5,8 +5,6 @@ import glob
 import shutil
 import utils.yaml
 
-ALZHEIMER_RAW_DATA_DIR='Alzheimer_s Dataset/'
-ALZHEIMER_PROCESSED_DATA_DIR='data/processed/'
 folders = {
     "train": ["MildDemented", "ModerateDemented", "NonDemented", "VeryMildDemented"],
     "test": ["MildDemented", "ModerateDemented", "NonDemented", "VeryMildDemented"]
