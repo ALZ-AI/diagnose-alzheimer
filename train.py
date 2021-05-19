@@ -4,9 +4,6 @@ from utils.settings import *
 import utils.yaml
 from utils.train_func import conv_block, dense_block
 import os
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
 
 # read params from params.yaml
 params = utils.yaml.read_yaml("params.yaml")
