@@ -45,7 +45,12 @@ def predict(event, context):
     model = tf.keras.models.load_model(tmp_file)
     
     # make prediction
-    prediction = model.predict(image)
+    prediction_matrix = model.predict(image)
+    
+    # define classes
+    classes = ['MildDemented', 'ModerateDemented', 'NonDemented', 'VeryMildDemented']
+    index = np.where(prediction_matrix == np.amax(prediction_matrix))
+    prediction = classes[index]
     
     tmp_file.close()
     
