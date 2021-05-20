@@ -37,6 +37,9 @@ RUN pip uninstall -y pillow && CC="cc -mavx2" pip install -U --force-reinstall p
 # Check if tensorflow works
 RUN python -c "import tensorflow as tf; print(tf.__version__)"
 
+# Check if pillow works
+RUN python -c "import PIL"
+
 # Copy the earlier created app.py file to the container
 COPY app.py ./
 
