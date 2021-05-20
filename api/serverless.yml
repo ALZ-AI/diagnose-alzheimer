@@ -30,4 +30,6 @@ functions:
       - http:
           path: /predict
           method: get
-      
+      - http:
+          path: /predict
+          method: get
