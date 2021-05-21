@@ -5,36 +5,27 @@ import tempfile
 from cgi import parse_header, parse_multipart
 import base64
 import io
-from PIL import Image
+from PIL import Image, ImageFile
 import numpy as np
 
 BUCKET_NAME = "diagnose-alzheimer-bucket"
 MODEL_FILE_PATH = 'outs/model.h5'
 MODEL_LOCAL_PATH = '/tmp/' + MODEL_FILE_PATH
 
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+
 def predict(event, context):
     
     # check get or post
-    if event["requestContext"]["http"]["method"] == "GET":
-        return {
-            "statusCode": 200,
-            "body": "Hello World!"
-        }
-    
-    c_type, c_data = parse_header(event['headers']['content-type'])
-    assert c_type == 'multipart/form-data'
-    decoded_string = base64.b64decode(event['body'])
-    c_data['boundary'] = bytes(c_data['boundary'], "utf-8")
-    c_data['CONTENT-LENGTH'] = event['headers']['content-length']
-    form_data = parse_multipart(io.BytesIO(decoded_string), c_data)
-    
-    image_str = form_data["image"][0]
-    image = Image.open(io.BytesIO(image_str))
-    image = image.resize((256, 256))
-    image = np.array(image)
-    dim = len(image.shape)
+    data = json.loads(event["body"])
+    decoded_string = base64.b64decode(data["image"])
+    image = Image.open(io.BytesIO(decoded_string)).resize((256, 256))
+    image_np = np.array(image)
+    print(image_np.shape)
+    print(image_np)
+    dim = len(image_np.shape)
     while dim != 4:
-        if len(image.shape) < 4:
+        if dim < 4:
             image = np.expand_dims(image, axis = 0)
             dim = len(image.shape)
         elif dim == 4:
@@ -56,7 +47,7 @@ def predict(event, context):
     model = tf.keras.models.load_model(tmp_file)
     
     # make prediction
-    prediction_matrix = model.predict(image)
+    prediction_matrix = model.predict(image_np)
     
     # define classes
     classes = ['MildDemented', 'ModerateDemented', 'NonDemented', 'VeryMildDemented']

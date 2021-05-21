@@ -14,6 +14,14 @@ provider:
       alzai_api:
         path: ./
         file: Dockerfile
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action:
+            - s3:GetObject
+          Resource:
+            - "arn:aws:s3:::diagnose-alzheimer-bucket/*"
 functions:
   predict:
     image:
@@ -22,14 +30,7 @@ functions:
         - app.predict
       entryPoint:
           - '/lambda-entrypoint.sh'
-      enviroment:
-        BUCKET_NAME: diagnose-alzheimer-bucket
-        MODEL_FILE_PATH: outs/model.h5
-        MODEL_LOCAL_FILE_PATH: tmp/outs/model.h5
     events:
       - http:
           path: /predict
-          method: get
-      - http:
-          path: /predict
-          method: get
+          method: post
