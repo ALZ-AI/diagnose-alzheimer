@@ -19,20 +19,9 @@ def predict(event, context):
     # check get or post
     data = json.loads(event["body"])
     decoded_string = base64.b64decode(data["image"])
-    image = Image.open(io.BytesIO(decoded_string)).resize((256, 256))
+    image = Image.open(io.BytesIO(decoded_string)).resize((256, 256)).convert("RGB")
     image_np = np.array(image)
-    print(image_np.shape)
-    print(image_np)
-    dim = len(image_np.shape)
-    while dim != 4:
-        if dim < 4:
-            image_np = np.expand_dims(image_np, axis = 0)
-            dim = len(image_np.shape)
-        elif dim == 4:
-            break
-        else:
-            image_np = image_np[0]
-            dim = len(image_np.shape)
+    image_np = np.array([image_np])
     
     # download model from S3 Bucket to lambda
     s3 = boto3.resource("s3")
@@ -51,7 +40,11 @@ def predict(event, context):
     
     # define classes
     classes = ['MildDemented', 'ModerateDemented', 'NonDemented', 'VeryMildDemented']
-    index = np.where(prediction_matrix == np.amax(prediction_matrix))
+    
+    # get results
+    prediction_matrix = list(prediction_matrix)
+    max_val = max(prediction_matrix)
+    index = prediction_matrix.index(max_val)
     prediction = classes[index]
     
     tmp_file.close()
