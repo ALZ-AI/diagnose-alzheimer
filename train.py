@@ -24,7 +24,7 @@ one_hot_label = lambda image, label: (image, tf.one_hot(label, NUM_CLASSES))
 NUM_IMAGES = []
 
 for label in class_names:
-    dir_name = TRAIN_PROCESSED_DATA_DIR + label
+    dir_name = os.path.join(TRAIN_PROCESSED_DATA_DIR, label)
     dir_length = len(os.listdir(dir_name))
     NUM_IMAGES.append(dir_length)
 
