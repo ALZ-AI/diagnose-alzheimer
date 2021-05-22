@@ -27,12 +27,12 @@ def predict(event, context):
     while dim != 4:
         if dim < 4:
             image_np = np.expand_dims(image_np, axis = 0)
-            dim = len(image_np)
+            dim = len(image_np.shape)
         elif dim == 4:
             break
         else:
             image_np = image_np[0]
-            dim = len(image_np)
+            dim = len(image_np.shape)
     
     # download model from S3 Bucket to lambda
     s3 = boto3.resource("s3")
