@@ -26,13 +26,13 @@ def predict(event, context):
     dim = len(image_np.shape)
     while dim != 4:
         if dim < 4:
-            image = np.expand_dims(image, axis = 0)
-            dim = len(image.shape)
+            image_np = np.expand_dims(image_np, axis = 0)
+            dim = len(image_np)
         elif dim == 4:
             break
         else:
-            image = image[0]
-            dim = image.shape
+            image_np = image_np[0]
+            dim = len(image_np)
     
     # download model from S3 Bucket to lambda
     s3 = boto3.resource("s3")
@@ -44,7 +44,7 @@ def predict(event, context):
     object.download_fileobj(tmp_file)
     
     # load model
-    model = tf.keras.models.load_model(tmp_file)
+    model = tf.keras.models.load_model(tmp.name)
     
     # make prediction
     prediction_matrix = model.predict(image_np)
