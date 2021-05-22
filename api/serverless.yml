@@ -34,3 +34,4 @@ functions:
       - http:
           path: /predict
           method: post
+          cors: true

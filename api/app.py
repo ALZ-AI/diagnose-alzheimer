@@ -16,11 +16,17 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 def predict(event, context):
     
-    # check get or post
+    # get params
     data = json.loads(event["body"])
+    
+    # convert base64 string to pillow image
     decoded_string = base64.b64decode(data["image"])
     image = Image.open(io.BytesIO(decoded_string)).resize((256, 256)).convert("RGB")
+    
+    # convert pillow image to numpy array
     image_np = np.array(image)
+    
+    # prepare for prediction
     image_np = np.array([image_np])
     
     # download model from S3 Bucket to lambda
