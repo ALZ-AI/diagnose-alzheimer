@@ -5,3 +5,9 @@ stages:
     - data/raw/alzheimer/
     outs:
     - outs/clean.yaml
+  train:
+    cmd: python train.py
+    outs:
+    - outs/metrics.json
+    - outs/model_checkpoint.h5
+    - outs/model.h5

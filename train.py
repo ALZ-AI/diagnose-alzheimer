@@ -1,9 +1,9 @@
 import tensorflow as tf
 from utils.settings import *
 import utils.yaml
-from utils.train_func import conv_block, dense_block
-import os
-
+from utils.train_func import conv_block, dense_block, exponential_decay
+import json
+from matplotlib import pyplot as plt
 # read params from params.yaml
 params = utils.yaml.read_yaml("params.yaml")
 IMAGE_WIDTH = params["train"]["image_width"]
@@ -14,7 +14,7 @@ EPOCHS = params["train"]["epochs"]
 
 # some tensorflow things
 AUTOTUNE = tf.data.experimental.AUTOTUNE
-METRICS = [tf.keras.metrics.AUC(name='auc')]
+METRICS = ["accuracy", tf.keras.metrics.AUC(curve='ROC'), "mae"]
 
 # define static variables
 IMAGE_SIZE = [IMAGE_WIDTH, IMAGE_HEIGHT]
@@ -24,15 +24,14 @@ one_hot_label = lambda image, label: (image, tf.one_hot(label, NUM_CLASSES))
 
 train_ds = tf.keras.preprocessing.image_dataset_from_directory(
     TRAIN_PROCESSED_DATA_DIR,
-    validation_split=0.2,
-    subset="training",
-    seed=2023,
+    color_mode="grayscale",
     image_size=IMAGE_SIZE,
     batch_size=BATCH_SIZE)
 
 test_ds = tf.keras.preprocessing.image_dataset_from_directory(
     TEST_PROCESSED_DATA_DIR,
     image_size=IMAGE_SIZE,
+    color_mode="grayscale",
     batch_size=BATCH_SIZE)
 
 train_ds.class_names = class_names
@@ -46,25 +45,25 @@ test_ds = test_ds.cache().prefetch(buffer_size=AUTOTUNE)
 
 model = tf.keras.Sequential([
     tf.keras.Input(shape=(*IMAGE_SIZE, 1)),
-
+    
     tf.keras.layers.Conv2D(16, 3, activation='relu', padding='same'),
     tf.keras.layers.Conv2D(16, 3, activation='relu', padding='same'),
     tf.keras.layers.MaxPool2D(),
-
-    conv_block(16),
+    
     conv_block(32),
-
     conv_block(64),
-    tf.keras.layers.Dropout(0.2),
-
+    
     conv_block(128),
     tf.keras.layers.Dropout(0.2),
-
+    
+    conv_block(256),
+    tf.keras.layers.Dropout(0.2),
+    
     tf.keras.layers.Flatten(),
-    dense_block(256, 0.7),
-    dense_block(64, 0.5),
-    dense_block(32, 0.3),
-
+    dense_block(512, 0.7),
+    dense_block(128, 0.5),
+    dense_block(64, 0.3),
+    
     tf.keras.layers.Dense(NUM_CLASSES, activation='softmax')
 ])
 
@@ -73,15 +72,11 @@ model.compile(
     loss=tf.losses.CategoricalCrossentropy(),
     metrics=METRICS
 )
+
 try:
     model.load_weights('outs/model_lastsaved.h5')
 except:
     pass
-
-def exponential_decay(lr0, s):
-    def exponential_decay_fn(epoch):
-        return lr0 * 0.1 **(epoch / s)
-    return exponential_decay_fn
 
 exponential_decay_fn = exponential_decay(0.01, 20)
 lr_scheduler = tf.keras.callbacks.LearningRateScheduler(exponential_decay_fn)
@@ -96,4 +91,28 @@ history = model.fit(
     verbose=1
 )
 
-model.save('outs/model_lastsaved.h5')
+metrics = json.dumps({
+    "auc": history.history["auc"],
+    "accuracy": history.history["accuracy"],
+    "mae": history.history["mae"]
+})
+
+metrics_file = open("outs/metrics.json", "w+")
+
+metrics_file.write(metrics)
+
+metrics_file.close()
+
+model.save('outs/model.h5')
+
+
+fig, ax = plt.subplots(1, 2, figsize=(20, 3))
+ax = ax.ravel()
+
+for i, met in enumerate(['auc', 'loss']):
+    ax[i].plot(history.history[met])
+    ax[i].plot(history.history['val_' + met])
+    ax[i].set_title('Model {}'.format(met))
+    ax[i].set_xlabel('epochs')
+    ax[i].set_ylabel(met)
+    ax[i].legend(['train', 'val'])
