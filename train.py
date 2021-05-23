@@ -1,4 +1,3 @@
-from os.path import dirname
 import tensorflow as tf
 from utils.settings import *
 import utils.yaml
@@ -10,6 +9,8 @@ params = utils.yaml.read_yaml("params.yaml")
 IMAGE_WIDTH = params["train"]["image_width"]
 IMAGE_HEIGHT = params["train"]["image_height"]
 BATCH_SIZE = params["train"]["batch_size"]
+LEARNING_RATE = params["train"]["learning_rate"]
+EPOCHS = params["train"]["epochs"]
 
 # some tensorflow things
 AUTOTUNE = tf.data.experimental.AUTOTUNE
@@ -17,16 +18,9 @@ METRICS = [tf.keras.metrics.AUC(name='auc')]
 
 # define static variables
 IMAGE_SIZE = [IMAGE_WIDTH, IMAGE_HEIGHT]
-EPOCHS = 5
 class_names = ['MildDemented', 'ModerateDemented', 'NonDemented', 'VeryMildDemented']
 NUM_CLASSES = len(class_names)
 one_hot_label = lambda image, label: (image, tf.one_hot(label, NUM_CLASSES))
-NUM_IMAGES = []
-
-for label in class_names:
-    dir_name = os.path.join(TRAIN_PROCESSED_DATA_DIR, label)
-    dir_length = len(os.listdir(dir_name))
-    NUM_IMAGES.append(dir_length)
 
 train_ds = tf.keras.preprocessing.image_dataset_from_directory(
     TRAIN_PROCESSED_DATA_DIR,
@@ -34,7 +28,7 @@ train_ds = tf.keras.preprocessing.image_dataset_from_directory(
     subset="training",
     seed=2023,
     image_size=IMAGE_SIZE,
-    batch_size=BATCH_SIZE, )
+    batch_size=BATCH_SIZE)
 
 test_ds = tf.keras.preprocessing.image_dataset_from_directory(
     TEST_PROCESSED_DATA_DIR,
@@ -50,29 +44,8 @@ test_ds = test_ds.map(one_hot_label, num_parallel_calls=AUTOTUNE)
 train_ds = train_ds.cache().prefetch(buffer_size=AUTOTUNE)
 test_ds = test_ds.cache().prefetch(buffer_size=AUTOTUNE)
 
-
-def conv_block(filters):
-    block = tf.keras.Sequential([
-        tf.keras.layers.SeparableConv2D(filters, 3, activation='relu', padding='same'),
-        tf.keras.layers.SeparableConv2D(filters, 3, activation='relu', padding='same'),
-        tf.keras.layers.BatchNormalization(),
-        tf.keras.layers.MaxPool2D()
-    ])
-    return block
-
-
-def dense_block(units, dropout_rate):
-    block = tf.keras.Sequential([
-        tf.keras.layers.Dense(units, activation='relu'),
-        tf.keras.layers.BatchNormalization(),
-        tf.keras.layers.Dropout(dropout_rate)
-    ])
-
-    return block
-
-
 model = tf.keras.Sequential([
-    tf.keras.Input(shape=(*IMAGE_SIZE, 3)),
+    tf.keras.Input(shape=(*IMAGE_SIZE, 1)),
 
     tf.keras.layers.Conv2D(16, 3, activation='relu', padding='same'),
     tf.keras.layers.Conv2D(16, 3, activation='relu', padding='same'),
