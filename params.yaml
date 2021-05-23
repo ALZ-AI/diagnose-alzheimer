@@ -2,3 +2,5 @@ train:
   batch_size: 16
   image_width: 256
   image_height: 256
+  learning_rate: 0.01
+  epochs: 5
