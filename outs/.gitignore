@@ -1,2 +1,5 @@
 /normalization.yaml
 /clean.yaml
+/model.h5
+/model_checkpoint.h5
+/metrics.json
