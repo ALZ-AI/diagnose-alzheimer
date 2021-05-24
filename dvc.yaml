@@ -11,3 +11,7 @@ stages:
     - outs/metrics.json
     - outs/model_checkpoint.h5
     - outs/model.h5
+  evaluate:
+    cmd: python evaluate.py
+    deps:
+    - outs/model.h5
