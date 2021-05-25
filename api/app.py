@@ -2,7 +2,6 @@ import json
 import tensorflow as tf
 import boto3
 import tempfile
-from cgi import parse_header, parse_multipart
 import base64
 import io
 from PIL import Image, ImageFile
