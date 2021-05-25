@@ -1,4 +1,3 @@
-import json
 import tensorflow as tf
 import boto3
 import tempfile
@@ -6,6 +5,8 @@ import base64
 import io
 from PIL import Image, ImageFile
 import numpy as np
+from lambda_decorators import cors_headers, load_json_body, json_http_resp
+
 
 BUCKET_NAME = "diagnose-alzheimer-bucket"
 MODEL_FILE_PATH = 'outs/model.h5'
@@ -13,10 +14,13 @@ MODEL_LOCAL_PATH = '/tmp/' + MODEL_FILE_PATH
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
+@cors_headers
+@json_http_resp
+@load_json_body
 def predict(event, context):
     
     # get params
-    data = json.loads(event["body"])
+    data = event["body"]
     
     # convert base64 string to pillow image
     decoded_string = base64.b64decode(data["image"])
@@ -54,17 +58,8 @@ def predict(event, context):
     
     tmp_file.close()
     
-    body = {
+    response = {
         "prediction": prediction
     }
-
-    response = {
-        "statusCode": 200,
-        "body": json.dumps(body),
-        "headers": {
-            "Access-Control-Allow-Origin": '*',
-            "Access-Control-Allow-Credentials": True,
-        }
-    }
-
+    
     return response
