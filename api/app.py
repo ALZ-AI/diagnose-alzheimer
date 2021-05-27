@@ -24,13 +24,13 @@ def predict(event, context):
     
     # convert base64 string to pillow image
     decoded_string = base64.b64decode(data["image"])
-    image = Image.open(io.BytesIO(decoded_string)).resize((256, 256)).convert("RGB")
+    image = Image.open(io.BytesIO(decoded_string)).resize((256, 256)).convert("L")
     
     # convert pillow image to numpy array
     image_np = np.array(image)
     
     # prepare for prediction
-    image_np = np.array([image_np])
+    image_np = np.array([image_np.reshape((256, 256, 1))])
     
     # download model from S3 Bucket to lambda
     s3 = boto3.resource("s3")
