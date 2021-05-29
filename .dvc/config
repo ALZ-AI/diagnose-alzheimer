@@ -1,4 +1,2 @@
-[core]
-    remote = alzheimer
-['remote "alzheimer"']
-    url = gdrive://181N9-YXgt1WtgxX7J0T0nV-0g6hjuKF9
+['remote "adni"']
+    url = s3://diagnose-alzheimer-bucket/data/transformed

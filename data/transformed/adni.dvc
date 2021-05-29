@@ -1,0 +1,5 @@
+outs:
+- md5: 673166d07e828de37dd0fec136ae049e.dir
+  size: 9503020
+  nfiles: 307
+  path: adni
