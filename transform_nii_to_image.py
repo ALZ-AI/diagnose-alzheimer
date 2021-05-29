@@ -35,9 +35,7 @@ def transform(inputfile, outputfile):
 
     # if 4D image inputted
     if len(image_array.shape) == 4:
-        print(4)
-        return False
-
+        
         # set destination folder
         if not os.path.exists(outputfile):
             os.makedirs(outputfile)
