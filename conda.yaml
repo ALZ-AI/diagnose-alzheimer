@@ -16,3 +16,5 @@ dependencies:
   - pip:
     - dvc==2.1.0
     - opencv-python==4.5.0
+    - nibabel==3.2.1
+    - imageio==2.9.0

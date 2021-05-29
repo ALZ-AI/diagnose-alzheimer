@@ -7,3 +7,5 @@ pyyaml==5.4.1
 opencv-python=4.5.0
 tensorflow==2.5.0
 pytest==6.2.4
+nibabel==3.2.1
+imageio==2.9.0
