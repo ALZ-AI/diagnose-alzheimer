@@ -9,9 +9,11 @@ stages:
     cmd: python train.py
     outs:
     - outs/metrics.json
-    - outs/model_checkpoint.h5
+    - outs/metrics_visualization.png
     - outs/model.h5
   evaluate:
     cmd: python evaluate.py
     deps:
     - outs/model.h5
+    outs:
+    - evaluation_metrics.json
