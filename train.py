@@ -4,6 +4,9 @@ import utils.yaml
 from utils.train_func import conv_block, dense_block, exponential_decay
 import json
 from matplotlib import pyplot as plt
+from utils.data_loader import load_data
+
+
 # read params from params.yaml
 params = utils.yaml.read_yaml("params.yaml")
 IMAGE_WIDTH = params["train"]["image_width"]
@@ -13,35 +16,14 @@ LEARNING_RATE = params["train"]["learning_rate"]
 EPOCHS = params["train"]["epochs"]
 
 # some tensorflow things
-AUTOTUNE = tf.data.experimental.AUTOTUNE
 METRICS = ["accuracy", tf.keras.metrics.AUC(curve='ROC'), "mae"]
 
 # define static variables
 IMAGE_SIZE = [IMAGE_WIDTH, IMAGE_HEIGHT]
 class_names = ['MildDemented', 'ModerateDemented', 'NonDemented', 'VeryMildDemented']
 NUM_CLASSES = len(class_names)
-one_hot_label = lambda image, label: (image, tf.one_hot(label, NUM_CLASSES))
 
-train_ds = tf.keras.preprocessing.image_dataset_from_directory(
-    TRAIN_PROCESSED_DATA_DIR,
-    color_mode="grayscale",
-    image_size=IMAGE_SIZE,
-    batch_size=BATCH_SIZE)
-
-test_ds = tf.keras.preprocessing.image_dataset_from_directory(
-    TEST_PROCESSED_DATA_DIR,
-    image_size=IMAGE_SIZE,
-    color_mode="grayscale",
-    batch_size=BATCH_SIZE)
-
-train_ds.class_names = class_names
-test_ds.class_names = class_names
-
-train_ds = train_ds.map(one_hot_label, num_parallel_calls=AUTOTUNE)
-test_ds = test_ds.map(one_hot_label, num_parallel_calls=AUTOTUNE)
-
-train_ds = train_ds.cache().prefetch(buffer_size=AUTOTUNE)
-test_ds = test_ds.cache().prefetch(buffer_size=AUTOTUNE)
+train_ds, test_ds = load_data(image_size=IMAGE_SIZE, batch_size=BATCH_SIZE, class_names=class_names, autotune=tf.data.experimental.AUTOTUNE)
 
 model = tf.keras.Sequential([
     tf.keras.Input(shape=(*IMAGE_SIZE, 1)),
@@ -116,3 +98,5 @@ for i, met in enumerate(['auc', 'loss']):
     ax[i].set_xlabel('epochs')
     ax[i].set_ylabel(met)
     ax[i].legend(['train', 'val'])
+
+fig.savefig("outs/metrics_visualization.png")
