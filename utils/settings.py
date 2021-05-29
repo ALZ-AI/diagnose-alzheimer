@@ -11,3 +11,7 @@ TEST_RAW_DATA_DIR = os.path.join(PROJECT_ROOT_DIR, "data", "raw", "alzheimer", "
 
 TRAIN_PROCESSED_DATA_DIR = os.path.join(PROJECT_ROOT_DIR, "data", "processed", "alzheimer", "train")
 TEST_PROCESSED_DATA_DIR = os.path.join(PROJECT_ROOT_DIR, "data", "processed", "alzheimer", "test")
+
+ADNI_RAW_DATA_DIR = os.path.join(PROJECT_ROOT_DIR, "data", "raw", "adni")
+ALZHEIMER_TRANSFORMED_DATA_DIR = os.path.join(PROJECT_ROOT_DIR, "data", "transformed", "adni")
+ADNI_PROCESSED_DATA_DIR = os.path.join(PROJECT_ROOT_DIR, "data", "processed", "adni")
